@@ -1,0 +1,86 @@
+# =====================================================================
+# ncspot 核心與播放設定
+# =====================================================================
+# 啟用無縫播放
+gapless = true
+# 播放狀態通知（會觸發 KDE Plasma 的桌面通知）
+notify = true
+# 亂數隨機播放
+shuffle = false
+
+# =====================================================================
+# 專輯封面 (Album Art) 設定
+# =====================================================================
+# 指定圖片渲染後端。如果你是用 Kitty 終端機請用 "kitty"
+# 如果用支援 Sixel 的終端機（如 WezTerm 或新版 Konsole）可改為 "sixel"
+cover_backend = "kitty"
+
+# 圖片縮放比例（高解析度螢幕可設為 2 避免圖片太小）
+cover_max_scale = 2
+
+# =====================================================================
+# 介面排版與佈局 (Layout)
+# =====================================================================
+# 使用雙欄排版：左邊顯示歌單與導覽，右邊固定顯示專輯封面與歌詞
+# 比例分配為 7:3
+layout = "FixedRight(30)"
+
+# 歌曲列表欄位排版客製化
+[track_format]
+left = "%saved %num %title"
+center = "%artists"
+right = "%album %duration"
+
+# =====================================================================
+# 介面配色主題 (Nord / Dark Minimal Style)
+# =====================================================================
+[theme]
+background = "#fbf1c7"
+primary = "#3c3836"
+secondary = "#7c6f64"
+title = "#d65d0e"
+playing = "#427b58"
+playing_selected = "#fbf1c7"
+playing_bg = "#4275bc"
+highlight = "#3c3836"
+highlight_bg = "#f2e5bc" # 暗灰色高亮背景
+statusbar = "#3c3836"
+statusbar_progress = "#d65d0e"
+statusbar_bg = "#ebdbb2"
+cmdline = "#3c3836"
+cmdline_bg = "#fbf1c7"
+search_match = "#b16286"
+
+# Let the terminal can show the album cover
+[cover]
+show = true
+backend = "kitty"
+
+position = "top_right"
+clear = true
+size = [12, 6]
+
+# =====================================================================
+# 快捷鍵客製化 (Keybindings) - 加入 Vim 導覽操作
+# =====================================================================
+[keybindings]
+# 使用 hjkl 在歌單中移動
+"h" = "back"
+"j" = "down"
+"k" = "up"
+"l" = "open"
+
+# 空白鍵控制 播放/暫停
+" " = "playpause"
+
+# 切換歌曲
+"n" = "next"
+"p" = "previous"
+
+# 喜愛控制
+"s" = "save"
+
+# 介面焦點快速切換
+"f" = "focus queue"      # 快速跳到播放佇列
+"c" = "focus cover"      # 強制將焦點切換到封面視窗（可用於重整封面）
+
