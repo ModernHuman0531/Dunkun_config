@@ -1,0 +1,36 @@
+@import "~/.config/rofi/config.rasi"
+
+/* 覆寫成 grid 排列以顯示縮圖 */
+configuration {
+    show-icons: true;
+}
+window {
+    width: 60%;
+    height: 60%;
+}
+
+listview {
+    columns: 4;
+    lines: 3;
+    spacing: 10px;
+    cycle: true;
+    fixed-height: false;
+    fixed-columns: false;
+}
+
+element {
+    orientation: vertical;
+    padding: 8px;
+    children: [ "element-icon", "element-text" ];
+}
+
+element-icon {
+    size: 180px;
+    border-radius: 8px;
+    padding: 4px;
+}
+
+element-text {
+    horizontal-align: 0.5;
+    vertical-align: 0.5;
+}
