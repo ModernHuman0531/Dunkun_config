@@ -1,0 +1,68 @@
+
+; :initial 很重要 —— eww 啟動當下、第一次 poll 還沒跑完之前，
+; 變數若沒有 initial 值會是空字串，容易讓 image / progress 這類
+; 對型別要求嚴格的 widget 直接崩潰（例如 progress 需要數字、image 需要合法路徑）
+(defpoll SONG :interval "1s" :initial "" "./scripts/get_music_info.sh --song")
+(defpoll ARTIST :interval "1s" :initial "" "./scripts/get_music_info.sh --artist")
+(defpoll COVER :interval "5s" :initial "" "./scripts/get_music_info.sh --cover")
+(defpoll POSITION :interval "1s" :initial "0" "./scripts/get_music_info.sh --position")
+(defpoll PLAYER :interval "2s" :initial "" "./scripts/get_music_info.sh --player")
+(defpoll PLAYING :interval "1s" :initial "Stopped" "./scripts/get_music_info.sh --status")
+
+(defwidget media[]
+    (box :class "media-widget" :orientation "v" :space-evenly false
+        ; -------- 封面 + 歌曲資訊 --------
+        (box :class "media-meta" :orientation "h" :space-evenly false :halign "center"
+            (box :class "media-art"
+                (image
+                    ; 就算 COVER 意外是空字串（poll 尚未完成、或 script 出錯），
+                    ; 也強制 fallback 到本地固定圖片，避免 image widget 因空路徑而崩潰
+                    ; 請把下面這條路徑換成你自己的 fallback 圖實際路徑（跟 script 裡的 FALLBACK_COVER 保持一致）
+                    :path {COVER == "" ? "/home/dunkun/.config/eww/images/no-cover.png" : COVER}
+                    :image-width 72
+                    :image-height 72
+                )
+            )
+            (box :class "media-info" :orientation "v" :space-evenly false :valign "center" :halign "start"
+                (label :class "media-title" :text SONG :limit-width 18)
+                (label :class "media-artist" :text ARTIST :limit-width 18)
+            )
+        )
+
+        ; -------- 控制按鈕：獨立一排，放在進度條上面 --------
+        (box :class "media-controls" :orientation "h" :space-evenly false :halign "center"
+            (button
+                :class "media-button"
+                :onclick "playerctl -p ${PLAYER} previous"
+                "󰙣")
+            (button
+                :class "media-button play"
+                :onclick {
+                    PLAYING == "Playing"
+                    ? "playerctl -p ${PLAYER} pause"
+                    : "playerctl -p ${PLAYER} play"
+                }
+                (label
+                    :text {
+                        PLAYING == "Playing"
+                        ? "󰏥"
+                        : "󰐌"
+                    }
+                )
+            )
+            (button
+                :class "media-button"
+                :onclick "playerctl -p ${PLAYER} next"
+                "󰙡")
+        )
+
+        ; -------- 進度條：獨立一排，在按鈕下面 --------
+        (box :class "media-progress-row" :orientation "h" :space-evenly false
+            (progress
+                :class "music-progress"
+                :value POSITION
+                :hexpand true
+            )
+        )
+    )
+)

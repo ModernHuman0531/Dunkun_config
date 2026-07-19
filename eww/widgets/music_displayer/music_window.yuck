@@ -1,0 +1,98 @@
+
+;; ==================================================
+;; Music player widget
+;; Layout refers from https://github.com/abod8639/eww-music-widget
+;; ==================================================
+
+;; --- Listeners & Polls ---
+;; 標題 / 演出者跑馬燈：走你自己的 music-feeder.sh（保留多播放器判斷邏輯），
+;; 而不是 playerctl --follow（那個只會跟著單一 player，多開播放器會誤判）
+(deflisten song_title    :initial "No Music Playing" "~/.config/eww/scripts/music-feeder.sh song | python3 -u ~/.config/eww/scripts/scroll.py 25 0.3 || echo 'Unknown artist'")
+(deflisten song_artist   :initial "Unknown Artist"
+  "~/.config/eww/scripts/music-feeder.sh artist | python3 -u ~/.config/eww/scripts/scroll.py 25 0.3")
+
+;; 播放狀態 / 目前 player：沿用 get_music_info.sh 的輪詢架構
+(defpoll player_status :interval "1s" "~/.config/eww/scripts/get_music_info.sh --status")
+(defpoll music-player  :interval "2s" "~/.config/eww/scripts/get_music_info.sh --player")
+
+;; 進度：length/position/formatted-position 都改由 get_music_info.sh 內部
+;; 自己判斷目前 player，不能在 defpoll 的指令字串裡內插 ${music-player}
+;; （defpoll/deflisten 是純字串丟給 shell，不像 widget 屬性可以讀 eww 變數）
+(defpoll song_length_s :interval "2s"
+  "~/.config/eww/scripts/get_music_info.sh --length-s")
+(defpoll song_position_s :interval "1s"
+  "~/.config/eww/scripts/get_music_info.sh --position-s")
+(defpoll formatted_position :interval "1s"
+  "~/.config/eww/scripts/get_music_info.sh --formatted-position")
+
+;; 封面：沿用你自己的 get_music_info.sh --cover（含快取/YouTube 縮圖/fallback 邏輯）
+(defpoll music-cover :interval "2s" "~/.config/eww/scripts/get_music_info.sh --cover")
+
+;; 音量控制：統一用 volume_controller.sh（底線版本，跟 get/set/mute 三個呼叫保持一致）
+(defpoll volume_percent :interval "2s" "~/.config/eww/scripts/volume_controller.sh get")
+(defpoll volume_mute    :interval "2s" "pamixer --get-mute")
+
+;; cava 視覺化：接你自己那支 sed 版 cava.sh
+(deflisten cava :initial "" "zsh ~/.config/eww/scripts/cava.sh")
+
+;; --- Widget Definition ---
+(defwidget music-player-widget []
+  (box :class "music-widget" :orientation "h" :space-evenly false
+
+    ;; Left: Cover Art
+    (box :class "music-cover-frame"
+        (image :class "music-cover"
+                :path music-cover
+                :image-width 140
+                :image-height 140))
+    ;; Middle: Info & Controls
+    (box :class "music-info" :orientation "v" :space-evenly false :valign "center"
+      (label :class "song-title" :text song_title :halign "center")
+      (label :class "artist" :text song_artist :halign "center")
+
+      (box :class "progress-container" :orientation "v" :space-evenly false
+        (label :class "position" :text formatted_position :halign "center")
+        (scale :class "progress-bar"
+               :min 0
+               :max song_length_s
+               :value song_position_s
+               :onchange "playerctl -p ${music-player} position {}")
+      )
+      (box :class "controls" :orientation "h" :space-evenly false :halign "center" :spacing 15
+        (button :onclick "playerctl -p ${music-player} previous" :tooltip "Previous" "󰒮")
+        (button :onclick "playerctl -p ${music-player} play-pause" :tooltip "Play/Pause" :class "play-btn" {player_status == "Playing" ? "󰏤" : "󰐊"})
+        (button :onclick "playerctl -p ${music-player} next" :tooltip "Next" "󰒭")
+      )
+      (box :class "visualizer-container" :halign "start"
+        (label :class "cava-visualizer" :text cava)
+      )
+    )
+
+    ;; Right: Volume Column
+    (box :class "volume_bar" :orientation "v" :space-evenly false :valign "center" :halign "center"
+      (button :onclick "~/.config/eww/scripts/volume_controller.sh mute"
+              :class "vol_icon"
+              :style "color: ${volume_mute == 'true' ? '#b000ff' : 'inherit'};"
+              {volume_mute == "true" ? "󰝟 " : " "})
+      (scale :flipped true
+             :orientation "v"
+             :max 100
+             :min 0
+             :value {volume_percent}
+             :onchange "~/.config/eww/scripts/volume_controller.sh set {}")
+    )
+  )
+)
+
+;; --- Window Definition ---
+(defwindow music-widget
+  :monitor 0
+  :geometry (
+    geometry :x "20px"
+             :y "20px"
+             :width "460px"
+             :height "160px"
+  )
+  :wm-ignore true
+  (music-player-widget)
+)

@@ -1,0 +1,100 @@
+;; ==================================================
+;; Music player widget
+;; Layout refers from https://github.com/abod8639/eww-music-widget
+;; (Cover/title - artist scroll runner/progression bar/Last-play-next /volume-mute)
+;; ==================================================
+
+;; define variable
+(defvar script-dir "~/.config/eww/scripts")
+
+;; -------------------- Info source ------------------
+;; Scroll runner text
+(deflisten music-marquee :initial "No music Playing" "~/.config/eww/scripts/music-feeder.sh | ~/.config/eww/scripts/scroll.py 26 0.2")
+
+;; artist / status / progression / Current player
+(defpoll music-cover :interval "2s" "~/.config/eww/scripts/get_music_info.sh --cover")
+(defpoll music-status :interval "1s" "~/.config/eww/scripts/get_music_info.sh --status")
+(defpoll music-position :interval "1s" "~/.config/eww/scripts/get_music_info.sh --position")
+(defpoll music-player :interval "2s" "~/.config/eww/scripts/get_music_info.sh --player")
+
+;; Volume control
+(defpoll volume_percent :interval "2s" "~/.config/eww/scripts/volume_controller.sh get")
+(defpoll volume_mute :interval "1s" "pamixer --get-mute")
+
+;; cava visulaization
+(deflisten cava :initial "" "zsh ~/.config/eww/scripts/cava.sh")
+
+;; --- Widget definition ---
+(defwidget music-player[]
+    (box :class "music-player"
+         :orientation "v"
+         :space-evenly false
+         :spacing 10
+        (box :class "music-top"
+             :orientation "h"
+             :space-evenly false
+             :spacing 12
+
+             ;; Cover
+             (box :class "music-cover-frame"
+                (image :class "music-cover"
+                       :path music-cover
+                       :image-width 64
+                       :image-height 64))
+             ;; Info part
+             (box :class "music-info"
+                  :orientation "v"
+                  :space-evenly false
+                  :valign "center"
+                  :spacing 4
+                  (label :class "music-marquee"
+                         :limit-width 26
+                         :text music-marquee
+                         :halign "start")
+                  (label :class "music-status"
+                         :text {music-status == "Playing" ? "▶ Playing" : (music-status == "Paused" ? "⏸ Paused" : "⏹ Stopped")}
+                         :halign "start")))
+            ;; Progression bar
+            (scale :class "music-progress"
+                   :min 0
+                   :max 100
+                   :value music-position
+                   :active false)
+            ;; Control button
+            (box :class "music-btn"
+                 :orientation "h"
+                 :halign "center"
+                 :space-evenly false
+                 :spacing 20
+
+                 (button :class "music-btn"
+                         :onclick "playerctl -p ${music-player} previous"
+                         "󰒮")
+                 (button :class "music-btn music-btn-play"
+                         :onclick "playerctl -p ${music-player} play-pause"
+                         {music-status == "Playing" ? "󰏤" : "󰐊"})
+                 (button :class "music-btn"
+                         :onclick "playerctl -p ${music-player} next"
+                         "󰒭"))
+            ;; Volume and Mute
+            (box :class "music-volume-row"
+                 :orientation "h"
+                 :space-evenly false
+                 :spacing 8
+                 
+                 (button :onclick "~/.config/eww/scripts/volume_controller.sh mute"
+                         :class "vol_icon"
+                         :style "color: ${volume_mute == 'true' ? '#b000ff' : ''};"
+                         {volume_mute == "true" ? "󰝟" : ""})
+                 (scale :flipped true 
+                        :orientation "v" 
+                        :max 100 
+                        :min 0 
+                        :value {volume_percent}
+                        :onchange "~/.config/eww/music-widget/volume_controller.sh set {}")
+                 )
+            (box :class "visualizer-container"
+                 :halign "start"
+                 (label :class "cava-visulaizer" :text cava)
+                 )
+        ))

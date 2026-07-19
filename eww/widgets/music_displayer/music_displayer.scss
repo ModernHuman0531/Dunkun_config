@@ -1,0 +1,91 @@
+$font-size: 14px;
+$text: #f5f8ff;
+$subtext: #e2e9ff;
+$accent: #ffffff;
+$black: #1c1f2b;
+ 
+$bg: #9F8179;
+$bg-light: #ab8f87;
+$bg-dark: #483c32;
+ 
+* {
+  all: unset;
+  font-family: "JetBrainsMono Nerd Font Propo";
+}
+ 
+.media-widget {
+  background-image: linear-gradient(145deg, $bg-light, $bg);
+  border-radius: 22px;
+  padding: 18px;
+  margin: 8px 20px;
+  border: 1px solid rgba(255,255,255,0.08);
+  box-shadow: 0 3px 8px rgba(0,0,0,0.18), 0 10px 25px rgba(0,0,0,0.28);
+}
+ 
+.media-meta {
+  padding-bottom: 12px;
+}
+ 
+.media-art {
+  border-radius: 10px;
+  min-width: 72px;
+  min-height: 72px;
+  box-shadow: 0 8px 20px rgba(255,255,255,0.25);
+}
+ 
+.media-info {
+  padding-left: 12px;
+  font-size: $font-size;
+}
+ 
+.media-title {
+  color: $text;
+  font-size: 15px;
+  font-weight: 700;
+}
+ 
+.media-artist {
+  color: $subtext;
+  font-size: 13px;
+}
+ 
+.media-controls {
+  font-size: $font-size * 2;
+  padding-bottom: 8px;
+}
+ 
+.media-button {
+  color: $text;
+  transition: all 0.2s;
+  padding: 0 10px;
+}
+ 
+.media-button:hover {
+  color: $black;
+}
+ 
+.media-button.play {
+  padding: 0 16px;
+}
+ 
+.media-progress-row {
+  padding: 0 4px;
+}
+ 
+.music-progress {
+  min-height: 6px;
+}
+ 
+.music-progress trough {
+  min-height: 6px;
+  background-color: $bg-dark;
+  border-radius: 10px;
+}
+ 
+.music-progress trough progress {
+  background-color: $accent;
+  min-height: 6px;
+  border-radius: 10px;
+}
+ 
+
