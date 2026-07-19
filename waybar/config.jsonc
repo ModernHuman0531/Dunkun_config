@@ -1,8 +1,8 @@
 {
     "layer": "top",
-    "modules-left": ["hyprland/workspaces","hyprland/submap", "group/media"],
+    "modules-left": ["hyprland/workspaces","hyprland/submap", "group/media","custom/todo"],
     "modules-center": ["clock"],
-    "modules-right": ["group/volume", "battery", "custom/orbit", "cpu", "memory"],
+    "modules-right": ["group/volume", "battery", "custom/orbit", "cpu", "memory","custom/music-trigger"],
     "hyprland/window": {
         "max-length": 50
     },
@@ -76,7 +76,7 @@
         },
         "scroll-step": 1,
         "ignored-sinks": ["Easy Effects Sink"],
-        "on-click": "pavucontrol",
+        "on-click": "pavucontrol"
     },
     "pulseaudio/slider": {
         "min": 0,
@@ -104,16 +104,26 @@
       "tooltip": false,
       "on-click": "playerctl play-pause",
       "on-click-middle": "playerctl previous",
-      "on-click-right": "playerctl next",
+      "on-click-right": "playerctl next"
     },
     "custom/media-animation": {
       "exec": "~/.config/waybar/custom_modules/media/media-animation.sh",
-      "tooltip": false,
+      "tooltip": false
     },
     "custom/media-time": {
       "exec": "~/.config/waybar/custom_modules/media/media-time.sh",
       "escape": true,
       "interval": 1,
+      "tooltip": false
+    },
+    "custom/music-trigger": {
+      "format": " ",
+      "on-click": "eww open --toggle media_window",
+      "tooltip": false
+    },
+    "custom/todo": {
+      "format": "📝 ",
       "tooltip": false,
+      "on-click": "firefox -P todo-app --new-window https://to-do.live.com/tasks/important"
     }
 }
