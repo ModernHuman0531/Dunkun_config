@@ -41,6 +41,20 @@ Plug('emmanueltouzery/decisive.nvim') --view csv files
 Plug('folke/twilight.nvim') --surrounding dim
 Plug('sphamba/smear-cursor.nvim') --Animate the cursor with smear effect
 
+Plug('neovim/nvim-lspconfig')
+Plug('hrsh7th/nvim-cmp') -- completion engine
+Plug('hrsh7th/cmp-buffer') -- buffer source
+Plug('hrsh7th/cmp-path') -- buffer source
+Plug('hrsh7th/cmp-cmdline') -- buffer source
+Plug('hrsh7th/cmp-nvim-lsp') -- buffer source
+
+-- For luasnip user
+Plug('L3MON4D3/LuaSnip')
+Plug('saadparwaiz1/cmp_luasnip')
+Plug('petertriho/cmp-git')
+
+
+
 vim.call('plug#end')
 
 -- move config and plugin config to alternate files
@@ -78,6 +92,8 @@ require("plugins.treesitter")
 require("plugins.twilight")
 require("plugins.which-key")
 require("plugins.smear-cursor")
+require("plugins.cmp")
+require("plugins.lsp")
 end, 100)
 
 load_theme()
