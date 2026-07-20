@@ -122,8 +122,8 @@
       "tooltip": false
     },
     "custom/todo": {
-      "format": "📝 ",
-      "tooltip": false,
-      "on-click": "firefox -P todo-app --new-window https://to-do.live.com/tasks/important"
+      "format": "󱓞 " ,
+      "on-click": "xdg-open 'obsidian://adv-uri?vault=content&workspace=Tasks'",
+      "tooltip": "Open obsidian (Tasks todo workspace)"
     }
 }
